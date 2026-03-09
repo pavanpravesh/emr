@@ -1,2 +1,0 @@
-# MyProjects
-Patients Management System
