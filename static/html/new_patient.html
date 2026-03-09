@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="/static/js/new_patient.js"></script>
+    <style>
+        /* Custom file upload button */
+        .custom-file-upload {
+            display: inline-block;
+            padding: 0.6em 1.5em;
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            color: #fff !important;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            border: none;
+            margin-top: 0.25em;
+            margin-bottom: 0.5em;
+            box-shadow: 0 2px 8px rgba(26,42,108,0.08);
+        }
+        .custom-file-upload #file-upload-label {
+            color: #fff !important;
+        }
+        .custom-file-upload:hover {
+            background: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+            color: #1a2a6c;
+        }
+        input[type="file"].hidden-input {
+            display: none;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            animation: modalAppear 0.3s ease-out;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-title {
+            color: #1a2a6c;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            color: #1a2a6c;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #1a2a6c20;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            grid-column: 1 / -1;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            justify-content: flex-end;
+        }
+
+        .submit-button, 
+        .cancel-button {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button {
+            background-image: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            color: white;
+        }
+
+        .submit-button:hover {
+            background-image: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(26, 42, 108, 0.2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .cancel-button {
+            background-color: white;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .cancel-button:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #1a2a6c;
+        }
+
+        .error-message {
+            display: none;
+            color: #b21f1f;
+            background-color: rgba(178, 31, 31, 0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+            grid-column: 1 / -1;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: rotating 1s linear infinite;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes rotating {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tags input styling */
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .tag {
+            background: #1a2a6c;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .tags-input input {
+            border: none;
+            outline: none;
+            padding: 0.25rem;
+            flex: 1;
+            min-width: 120px;
+        }
+    </style>
+
+    <!-- Modal Content -->
+        <div class="modal-header">
+            <button class="close-button" onclick="closeModal()">×</button>
+            <h2 class="modal-title">Add New Patient</h2>
+        </div>
+        </div>
+        
+        <form id="patientForm" onsubmit="submitPatientForm(event)">
+            <div class="form-container">
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Personal Information</h3>
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required 
+                            placeholder="Enter patient's full name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="width:100%">
+                            <label for="age">Age <span style="color:red">*</span></label>
+                            <input type="number" id="age" name="age" required min="0" max="150" placeholder="Age">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="maritalStatus">Marital Status</label>
+                            <select id="maritalStatus" name="maritalStatus" required>
+                                <option value="">Select marital status</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="occupation">Occupation</label>
+                            <input type="text" id="occupation" name="occupation" 
+                                placeholder="Enter occupation">
+                        </div>
+                        <div class="form-group">
+                            <label for="nationality">Nationality</label>
+                            <input type="text" id="nationality" name="nationality" 
+                                placeholder="Enter nationality">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bloodType">Blood Type</label>
+                            <select id="bloodType" name="bloodType" required>
+                                <option value="">Select blood type</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Patient Status</label>
+                            <select id="status" name="status" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="governmentId">Government ID</label>
+                        <input type="text" id="governmentId" name="governmentId" 
+                            placeholder="Enter government ID number">
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Primary Phone</label>
+                            <input type="tel" id="phone" name="phone" required 
+                                placeholder="Enter primary phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="alternatePhone">Alternative Phone</label>
+                            <input type="tel" id="alternatePhone" name="alternatePhone" 
+                                placeholder="Enter alternative phone number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" 
+                            placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Street Address</label>
+                        <input type="text" id="address" name="address" required 
+                            placeholder="Enter street address">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" required 
+                                placeholder="Enter city">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State/Province</label>
+                            <input type="text" id="state" name="state" required 
+                                placeholder="Enter state/province">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" id="postalCode" name="postalCode" required 
+                                placeholder="Enter postal code">
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" name="country" required 
+                                placeholder="Enter country">
+                        </div>
+                    </div>
+                    <div class="form-section-subsection">
+                        <h4 class="subsection-title">Emergency Contact</h4>
+                        <div class="form-group">
+                            <label for="emergencyContactName">Contact Name</label>
+                            <input type="text" id="emergencyContactName" name="emergencyContactName" required 
+                                placeholder="Enter emergency contact name">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emergencyContactPhone">Contact Phone</label>
+                                <input type="tel" id="emergencyContactPhone" name="emergencyContactPhone" required 
+                                    placeholder="Enter emergency contact phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="emergencyContactRelation">Relationship</label>
+                                <input type="text" id="emergencyContactRelation" name="emergencyContactRelation" required 
+                                    placeholder="Enter relationship">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Medical Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" id="height" name="height" 
+                                placeholder="Enter height in cm" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" 
+                                placeholder="Enter weight in kg" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicalHistory">Medical History</label>
+                        <div id="medicalHistoryTags" class="tags-input">
+                            <input type="text" placeholder="Type and press Enter to add medical conditions">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="surgicalHistory">Surgical History</label>
+                        <div id="surgicalHistoryTags" class="tags-input">
+                            <input type="text" placeholder="Type and press Enter to add surgical procedures">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="allergies">Allergies</label>
+                        <div id="allergiesTags" class="tags-input">
+                            <input type="text" placeholder="Type and press Enter to add allergies">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="medications">Current Medications</label>
+                        <div id="medicationsTags" class="tags-input">
+                            <input type="text" placeholder="Type and press Enter to add medications">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="familyDoctor">Family Doctor</label>
+                            <input type="text" id="familyDoctor" name="familyDoctor" 
+                                placeholder="Enter family doctor's name">
+                        </div>
+                        <div class="form-group">
+                            <label for="preferredPharmacy">Preferred Pharmacy</label>
+                            <input type="text" id="preferredPharmacy" name="preferredPharmacy" 
+                                placeholder="Enter preferred pharmacy">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Lifestyle Information Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Lifestyle Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="smokingStatus">Smoking Status</label>
+                            <select id="smokingStatus" name="smokingStatus">
+                                <option value="">Select status</option>
+                                <option value="never">Never Smoked</option>
+                                <option value="former">Former Smoker</option>
+                                <option value="current">Current Smoker</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alcoholConsumption">Alcohol Consumption</label>
+                            <select id="alcoholConsumption" name="alcoholConsumption">
+                                <option value="">Select frequency</option>
+                                <option value="none">None</option>
+                                <option value="occasional">Occasional</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="frequent">Frequent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exerciseFrequency">Exercise Frequency</label>
+                        <select id="exerciseFrequency" name="exerciseFrequency">
+                            <option value="">Select frequency</option>
+                            <option value="none">None</option>
+                            <option value="occasional">1-2 times/week</option>
+                            <option value="regular">3-4 times/week</option>
+                            <option value="active">5+ times/week</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dietaryRestrictions">Dietary Restrictions</label>
+                        <div id="dietaryRestrictionsTags" class="tags-input">
+                            <input type="text" placeholder="Type and press Enter to add dietary restrictions">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Notes Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Additional Notes</h3>
+                    <div class="form-group">
+                        <label for="notes">General Notes</label>
+                        <textarea id="notes" name="notes" 
+                            placeholder="Enter any additional notes or comments about the patient"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="specialInstructions">Special Instructions</label>
+                        <textarea id="specialInstructions" name="specialInstructions" 
+                            placeholder="Enter any special instructions for patient care"></textarea>
+                    </div>
+                </div>
+
+                <!-- Prescription, Tests, Reports Section -->
+                <div class="form-section">
+                    <h3 class="section-title">Reports</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prescription">Prescription</label>
+                            <textarea id="prescription" name="prescription" placeholder="Enter prescription details"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="tests">Tests</label>
+                            <textarea id="tests" name="tests" placeholder="Enter tests to be conducted"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="width:100%">
+                            <label for="reports">Reports</label>
+                            <textarea id="reports" name="reports" placeholder="Enter report details or upload links"></textarea>
+                            <div style="margin-top: 0.5em;">
+                                <label for="reportFiles" class="custom-file-upload">
+                                    <span id="file-upload-label">Choose Files</span>
+                                    <input type="file" id="reportFiles" name="reportFiles" class="hidden-input" multiple accept="application/pdf,image/*,.doc,.docx">
+                                </label>
+                                <small style="color: #666;">You can upload multiple files (PDF, images, Word docs).</small>
+                                <div id="selected-files-list" style="margin-top: 0.5em; font-size: 0.95em; color: #1a2a6c;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="cancel-button" onclick="window.parent && window.parent.document.getElementById('newPatientModal') ? window.parent.document.getElementById('newPatientModal').style.display = 'none' : (window.closeModal && closeModal())">Cancel</button>
+                    <button type="submit" class="submit-button">Add Patient</button>
+                </div>
+                <div id="errorMessage" class="error-message"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Show selected file names for attractive upload button
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileInput = document.getElementById('reportFiles');
+            var fileLabel = document.getElementById('file-upload-label');
+            var fileList = document.getElementById('selected-files-list');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (fileInput.files.length > 0) {
+                        let names = Array.from(fileInput.files).map(f => f.name);
+                        fileLabel.textContent = fileInput.files.length > 1 ? `${fileInput.files.length} files selected` : names[0];
+                        fileList.textContent = names.join(', ');
+                    } else {
+                        fileLabel.textContent = 'Choose Files';
+                        fileList.textContent = '';
+                    }
+                });
+            }
+        });
+        // Initialize tags inputs
+        function initializeTagsInput(containerId, fieldName) {
+            const container = document.getElementById(containerId);
+            const input = container.querySelector('input');
+            const tags = new Set();
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && input.value.trim()) {
+                    e.preventDefault();
+                    const tag = input.value.trim();
+                    if (!tags.has(tag)) {
+                        tags.add(tag);
+                        const tagElement = document.createElement('div');
+                        tagElement.className = 'tag';
+                        tagElement.innerHTML = `
+                            ${tag}
+                            <button type="button" class="tag-remove" onclick="removeTag(this, '${tag}', '${containerId}')">&times;</button>
+                        `;
+                        container.insertBefore(tagElement, input);
+                        input.value = '';
+                    }
+                }
+            });
+
+            // Store tags in a hidden input for form submission
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = fieldName;
+            container.appendChild(hiddenInput);
+        }
+
+        function removeTag(button, tag, containerId) {
+            const container = document.getElementById(containerId);
+            button.parentElement.remove();
+            updateHiddenInput(containerId);
+        }
+
+        function updateHiddenInput(containerId) {
+            const container = document.getElementById(containerId);
+            const tags = Array.from(container.querySelectorAll('.tag'))
+                .map(tag => tag.textContent.trim());
+            const hiddenInput = container.querySelector('input[type="hidden"]');
+            hiddenInput.value = JSON.stringify(tags);
+        }
+
+        // Initialize all tags inputs
+        initializeTagsInput('medicalHistoryTags', 'medicalHistory');
+        initializeTagsInput('allergiesTags', 'allergies');
+        initializeTagsInput('medicationsTags', 'medications');
+
+        // Add loading state to button
+        function setLoading(isLoading) {
+            const button = document.querySelector('.submit-button');
+            if (isLoading) {
+                button.classList.add('loading');
+                button.textContent = 'Adding Patient';
+                button.disabled = true;
+            } else {
+                button.classList.remove('loading');
+                button.textContent = 'Add Patient';
+                button.disabled = false;
+            }
+        }
+
+        // Handle form submission
+        async function submitPatientForm(event) {
+            event.preventDefault();
+            setLoading(true);
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none';
+
+            try {
+                // Gather all form data including tags
+                const formData = {
+                    name: document.getElementById('name').value,
+                    age: parseInt(document.getElementById('age').value),
+                    gender: document.getElementById('gender').value,
+                    bloodType: document.getElementById('bloodType').value,
+                    status: document.getElementById('status').value,
+                    address: document.getElementById('address').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    medicalHistory: JSON.parse(document.querySelector('#medicalHistoryTags input[type="hidden"]').value || '[]'),
+                    allergies: JSON.parse(document.querySelector('#allergiesTags input[type="hidden"]').value || '[]'),
+                    medications: JSON.parse(document.querySelector('#medicationsTags input[type="hidden"]').value || '[]'),
+                    notes: document.getElementById('notes').value
+                };
+
+                const response = await fetch('/api/patients', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    // Optionally refresh the patient list
+                    if (typeof handlePatients === 'function') {
+                        handlePatients();
+                    }
+                } else {
+                    const error = await response.json();
+                    errorMessage.textContent = error.detail || 'Failed to add patient';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An error occurred while adding the patient';
+                errorMessage.style.display = 'block';
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Clear error message when user starts typing
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', () => {
+                document.getElementById('errorMessage').style.display = 'none';
+            });
+        });
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add any initialization code here
+        });
+    function closeModal() {
+        // Try to close the modal in the parent document if loaded in a modal
+        if (window.parent && window.parent.document.getElementById('newPatientModal')) {
+            window.parent.document.getElementById('newPatientModal').style.display = 'none';
+        } else if (window.frameElement && window.frameElement.closest('.modal')) {
+            window.frameElement.closest('.modal').style.display = 'none';
+        } else if (window.document.getElementById('newPatientModal')) {
+            window.document.getElementById('newPatientModal').style.display = 'none';
+        }
+    }
+    </script>
