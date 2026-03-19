@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Protected Page</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f0f2f5;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+		.taskbar {
+			background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+			padding: 1rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+		}
+		.taskbar-buttons {
+			display: flex;
+			gap: 1rem;
+		}
+		.taskbar-buttons button {
+			border: none;
+			color: #fff;
+			background-image: linear-gradient(45deg, #1a2a6c, #b21f1f);
+			border-radius: 20px;
+			background-size: 100% auto;
+			font-family: inherit;
+			font-size: 17px;
+			padding: 0.6em 1.5em;
+			transition: all 0.3s ease;
+		}
+		.taskbar-buttons button:hover {
+			background-image: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+			background-position: right center;
+			background-size: 200% auto;
+			-webkit-animation: pulse 2s infinite;
+			animation: pulse512 1.5s infinite;
+		}
+		@keyframes pulse512 {
+			0% { box-shadow: 0 0 0 0 rgba(26, 42, 108, 0.4); }
+			70% { box-shadow: 0 0 0 10px rgba(253, 187, 45, 0); }
+			100% { box-shadow: 0 0 0 0 rgba(253, 187, 45, 0); }
+		}
+		.logout-button {
+			border: none;
+			color: #fff;
+			background-image: linear-gradient(45deg, #b21f1f, #fdbb2d);
+			border-radius: 20px;
+			background-size: 100% auto;
+			font-family: inherit;
+			font-size: 17px;
+			padding: 0.6em 1.5em;
+			transition: all 0.3s ease;
+		}
+		.logout-button:hover {
+			background-image: linear-gradient(45deg, #b21f1f, #ff6b6b);
+			background-position: right center;
+			background-size: 200% auto;
+			-webkit-animation: pulse 2s infinite;
+			animation: pulse512 1.5s infinite;
+		}
+		.main-content {
+			flex: 1;
+			padding: 2rem;
+			max-width: 1200px;
+			margin: 0 auto;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		.welcome-message {
+			background: linear-gradient(to right, #ffffff, #f8f9fa);
+			padding: 2rem;
+			border-radius: 15px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+			margin-bottom: 2rem;
+			text-align: center;
+			border-left: 5px solid #1a2a6c;
+			font-size: 1.5rem;
+			color: #2c3e50;
+			font-weight: 500;
+			animation: welcomeSlide 0.5s ease-out;
+		}
+		@keyframes welcomeSlide {
+			from { opacity: 0; transform: translateY(-20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		.modal {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1000;
+			align-items: center;
+			justify-content: center;
+		}
+		.modal-content {
+			background-color: white;
+			padding: 2rem;
+			border-radius: 8px;
+			width: 90%;
+			max-width: 500px;
+			position: relative;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+		.close-button {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
+			font-size: 1.5rem;
+			cursor: pointer;
+			background: none;
+			border: none;
+			color: #666;
+		}
+		.form-group {
+			margin-bottom: 1rem;
+		}
+		.form-group label {
+			display: block;
+			margin-bottom: 0.5rem;
+			font-weight: bold;
+		}
+		.form-group input, .form-group select {
+			width: 100%;
+			padding: 0.75rem;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 1rem;
+			box-sizing: border-box;
+		}
+		.form-group select {
+			background-color: white;
+		}
+		.button-group {
+			display: flex;
+			gap: 1rem;
+			margin-top: 2rem;
+		}
+		.submit-button, .cancel-button {
+			padding: 0.75rem 1.5rem;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 1rem;
+			flex: 1;
+		}
+		.submit-button {
+			background-color: #28a745;
+			color: white;
+		}
+		.submit-button:hover {
+			background-color: #218838;
+		}
+		.cancel-button {
+			background-color: #dc3545;
+			color: white;
+		}
+		.cancel-button:hover {
+			background-color: #c82333;
+		}
+	</style>
+</head>
+<body>
+	<div class="taskbar">
+		<div class="taskbar-buttons">
+			<button onclick="handlePatients()">Patients</button>
+			<button onclick="handleReports()">Reports</button>
+		</div>
+		<button class="logout-button" onclick="logout()">Logout</button>
+	</div>
+	<div class="main-content">
+		<div id="message" class="welcome-message">Loading...</div>
+		<div id="content-area"></div>
+	</div>
+	<!-- Patient Details Modal -->
+	<div id="patientModal" class="modal">
+		<div id="modalContent"></div>
+	</div>
+		<script src="/static/js/home.js"></script>
+</body>
+</html>

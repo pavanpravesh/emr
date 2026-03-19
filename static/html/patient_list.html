@@ -1,0 +1,855 @@
+<!-- Follow Up Modal -->
+    <style>
+        #followUpModal .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            padding: 0;
+            overflow: hidden;
+            animation: fadeInUp 0.3s;
+        }
+        #followUpModal .modal-header {
+            background: linear-gradient(90deg, #4f8cff 0%, #38cfa6 100%);
+            color: #fff;
+            padding: 1.2rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #followUpModal .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        #followUpModal .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.7rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        #followUpModal .modal-close:hover {
+            color: #ffd700;
+        }
+        #followUpForm {
+            padding: 1.5rem;
+        }
+        #followUpForm .form-group {
+            margin-bottom: 1.2rem;
+        }
+        #followUpForm label {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            display: block;
+            color: #333;
+        }
+        #followUpForm input[type="date"],
+        #followUpForm textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f7fafc;
+            transition: border 0.2s;
+        }
+        #followUpForm input[type="date"]:focus,
+        #followUpForm textarea:focus {
+            border: 1.5px solid #4f8cff;
+            outline: none;
+        }
+        #followUpForm .cancel-button {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #followUpForm .cancel-button:hover {
+            background: #bdbdbd;
+        }
+        #followUpForm .submit-button {
+            background: linear-gradient(90deg, #4f8cff 0%, #38cfa6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+            transition: background 0.2s;
+        }
+        #followUpForm .submit-button:hover {
+            background: linear-gradient(90deg, #38cfa6 0%, #4f8cff 100%);
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+    <div id="followUpModal" class="modal" style="display:none; z-index:1200; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4);">
+        <div class="modal-content" style="max-width:500px; position:relative; z-index:1300; margin:auto; top:10vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Follow Up</h2>
+                <button class="modal-close" onclick="document.getElementById('followUpModal').style.display='none'">×</button>
+            </div>
+            <form id="followUpForm">
+                <div class="form-group">
+                    <label for="followUpDate">Date</label>
+                    <input type="date" id="followUpDate" name="followUpDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="followUpTests">Tests Recommended</label>
+                    <textarea id="followUpTests" name="followUpTests" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="followUpReports">Reports</label>
+                    <textarea id="followUpReports" name="followUpReports" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="followUpPrescription">Prescription</label>
+                    <textarea id="followUpPrescription" name="followUpPrescription" rows="2"></textarea>
+                </div>
+                <div style="text-align:right;">
+                    <button type="button" class="cancel-button" onclick="document.getElementById('followUpModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="submit-button">Save Follow Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Records</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            justify-content: space-between;
+        }
+
+        .home-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            color: #fff;
+            background-image: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            border-radius: 20px;
+            background-size: 100% auto;
+            font-family: inherit;
+            font-size: 17px;
+            padding: 0.6em 1.5em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .home-button:hover {
+            background-image: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+            background-position: right center;
+            background-size: 200% auto;
+            -webkit-animation: pulse 2s infinite;
+            animation: pulse512 1.5s infinite;
+        }
+
+        .home-icon {
+            font-size: 1.2rem;
+            color: inherit;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-group select {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-group select:hover {
+            border-color: #1a2a6c;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+        }
+
+        .patient-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #f8fafc;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .table-header th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1a2a6c;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .table-header th:hover {
+            background-color: #eef2f7;
+        }
+
+        .table-header th::after {
+            content: '↕️';
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .table-row {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .table-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .table-row td {
+            padding: 1rem;
+            border-bottom: 1px solid #eef2f7;
+            vertical-align: middle;
+        }
+
+        .patient-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 250px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2a6c, #2a3a7c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: #1a2a6c;
+            margin-bottom: 0.25rem;
+        }
+
+        .patient-details {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .contact-info span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #444;
+        }
+
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(26, 42, 108, 0.1);
+            border-top: 3px solid #1a2a6c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state p {
+            margin: 0.5rem 0 1rem;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .add-button {
+            border: none;
+            color: #fff;
+            background-image: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            border-radius: 20px;
+            background-size: 100% auto;
+            font-family: inherit;
+            font-size: 17px;
+            padding: 0.6em 1.5em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .add-button:hover {
+            background-image: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+            background-position: right center;
+            background-size: 200% auto;
+        }
+
+        @media (max-width: 1024px) {
+            .patient-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 2rem auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: #f8fafc;
+            color: #1a2a6c;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .info-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .info-section h3 {
+            color: #1a2a6c;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            color: #666;
+            min-width: 120px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .medical-history {
+            grid-column: 1 / -1;
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .history-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-avatar {
+            width: 64px;
+            height: 64px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .search-group {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .filter-group select {
+                flex: 1;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                padding: 1rem;
+                width: calc(100% - 2rem);
+            }
+
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #modalReports {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+#modalReports table {
+    font-size: 0.93rem;
+    min-width: 320px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 0.5em;
+}
+#modalReports th, #modalReports td {
+    padding: 3px 6px;
+    border: 1px solid #e0e0e0;
+    font-size: 0.93rem;
+    word-break: break-word;
+}
+#modalReports th {
+    background: #f2f6fa;
+    font-weight: 600;
+    min-width: 55px;
+    white-space: nowrap;
+}
+#modalReports td {
+    background: #fff;
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <h1 class="page-title" style="margin: 0;">Patient Records</h1>
+                <button class="add-button" id="openNewPatientModal" type="button">
+                    <span style="font-size: 1.2em;">➕</span> Add New Patient
+                </button>
+                <button onclick="window.location.href='reports.html'" class="add-button" type="button">
+                    <span style="font-size: 1.2em;">📄</span> Reports
+                </button>
+                <!-- <button onclick="generateReport()" class="add-button" type="button">
+                    <span style="font-size: 1.2em;">📊</span> Generate Report
+                </button> -->
+            </div>
+            <button onclick="window.location.href='home.html'" class="home-button">
+                <span class="home-icon">⬅️</span>
+                Home Page
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="search-group">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" 
+                           placeholder="Search patients by name, email, or phone...">
+                </div>
+                <div class="filter-group">
+                    <select id="statusFilter" onchange="applyFilters()">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <select id="sortBy" onchange="applyFilters()">
+                        <option value="recent">Recent First</option>
+                        <option value="name">Sort by Name</option>
+                        <option value="age">Sort by Age</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+
+        <table id="patientTable" class="patient-table">
+            <thead class="table-header">
+                <tr>
+                    <th onclick="updateSort('name')">Patient Info</th>
+                    <th onclick="updateSort('status')">Status</th>
+                    <th onclick="updateSort('recent')">Last Visit</th>
+                    <th>Medical Info</th>
+                    <th>Reports</th>
+                </tr>
+            </thead>
+            <tbody id="patientTableBody">
+                <!-- Patient rows will be loaded here -->
+            </tbody>
+        </table>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 24 24' fill='none' stroke='%231a2a6c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'%3E%3C/path%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'%3E%3C/rect%3E%3Cpath d='M9.5 12h5'%3E%3C/path%3E%3Cpath d='M9.5 16h5'%3E%3C/path%3E%3C/svg%3E" 
+                 alt="No patients found" style="opacity: 0.5; margin-bottom: 1rem;">
+            <p>No patients found matching your criteria</p>
+            <a href="new_patient.html" class="add-button">
+                <span>➕</span>
+                Add New Patient
+            </a>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <!-- New Patient Modal -->
+    <div id="newPatientModal" class="modal" style="display:none;">
+    <div class="modal-content"><div id="newPatientModalContent"></div></div>
+    </div>
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div id="modalAvatar" class="avatar modal-avatar"></div>
+                    <div>
+                        <h2 id="modalPatientName"></h2>
+                        <p id="modalPatientBasicInfo" style="color: #666;"></p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="hidePatientModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-section">
+                    <h3><i>👤</i> Personal Information</h3>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-label">Age</span>
+                            <span id="modalAge" class="info-value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Gender</span>
+                            <span id="modalGender" class="info-value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Blood Type</span>
+                            <span id="modalBloodType" class="info-value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status</span>
+                            <span id="modalStatus" class="info-value"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <h3><i>📞</i> Contact Information</h3>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-label">Phone</span>
+                            <span id="modalPhone" class="info-value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span id="modalEmail" class="info-value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Address</span>
+                            <span id="modalAddress" class="info-value"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="medical-history">
+                    <h3><i>🏥</i> Medical Information</h3>
+                    <div class="info-list">
+                        <div class="info-item"><span class="info-label">Medications</span><span id="modalMedications" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Medications Reports</span><span id="modalMedicationsReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Allergies</span><span id="modalAllergies" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Allergies Reports</span><span id="modalAllergiesReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Medical History</span><span id="modalMedicalHistory" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Medical History Reports</span><span id="modalMedicalHistoryReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Surgical History</span><span id="modalSurgicalHistory" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Surgical History Reports</span><span id="modalSurgicalHistoryReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Height</span><span id="modalHeight" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Height Reports</span><span id="modalHeightReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Weight</span><span id="modalWeight" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Weight Reports</span><span id="modalWeightReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Family Doctor</span><span id="modalFamilyDoctor" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Family Doctor Reports</span><span id="modalFamilyDoctorReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Preferred Pharmacy</span><span id="modalPreferredPharmacy" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Preferred Pharmacy Reports</span><span id="modalPreferredPharmacyReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Smoking Status</span><span id="modalSmokingStatus" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Smoking Status Reports</span><span id="modalSmokingStatusReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Alcohol Consumption</span><span id="modalAlcoholConsumption" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Alcohol Consumption Reports</span><span id="modalAlcoholConsumptionReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Exercise Frequency</span><span id="modalExerciseFrequency" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Exercise Frequency Reports</span><span id="modalExerciseFrequencyReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Dietary Restrictions</span><span id="modalDietaryRestrictions" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Dietary Restrictions Reports</span><span id="modalDietaryRestrictionsReports" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Prescription</span><span id="modalPrescription" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Prescription Reports</span><span id="modalPrescriptionReports" class="info-value"></span></div>
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <span class="info-label">Reports</span>
+                            <div id="modalReports" class="info-value" style="margin-top: 0.5rem;"></div>
+                        </div>
+                        <div class="info-item"><span class="info-label">Last Visit</span><span id="modalLastVisit" class="info-value"></span></div>
+                        <div class="info-item"><span class="info-label">Notes</span><span id="modalNotes" class="info-value"></span></div>
+                    </div>
+                </div>
+                <div style="text-align:center; margin-top:2rem;">
+                    <button id="followUpBtn" class="submit-button" style="padding:0.75rem 2rem; font-size:1rem; border-radius:8px; background-image:linear-gradient(45deg,#1a2a6c,#b21f1f); color:white; border:none; cursor:pointer;">Follow Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/patient_list.js"></script>
+    <script>
+    document.getElementById('openNewPatientModal').onclick = async function() {
+        try {
+            const response = await fetch('/static/html/new_patient.html');
+            const content = await response.text();
+            document.getElementById('newPatientModalContent').innerHTML = content;
+            document.getElementById('newPatientModal').style.display = 'block';
+
+            // Re-evaluate scripts in the loaded content so closeModal is available
+            var scripts = document.getElementById('newPatientModalContent').getElementsByTagName('script');
+            for (var i = 0; i < scripts.length; i++) {
+                var newScript = document.createElement('script');
+                if (scripts[i].src) {
+                    newScript.src = scripts[i].src;
+                } else {
+                    newScript.text = scripts[i].text;
+                }
+                document.body.appendChild(newScript);
+            }
+
+            // Add click outside to close
+            document.getElementById('newPatientModal').onclick = function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            };
+        } catch (e) {
+            alert('Could not load new patient form.');
+        }
+    };
+    </script>
+</body>
+</html>

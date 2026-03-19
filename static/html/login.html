@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login - Patient Management System</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+			background-color: #1a2a6c;
+			position: relative;
+			overflow: hidden;
+		}
+		body::before {
+			content: '';
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: 
+				linear-gradient(217deg, rgba(26,42,108,.8), rgba(26,42,108,0) 70.71%),
+				linear-gradient(127deg, rgba(178,31,31,.8), rgba(178,31,31,0) 70.71%),
+				linear-gradient(336deg, rgba(253,187,45,.8), rgba(253,187,45,0) 70.71%);
+			z-index: 1;
+		}
+		body::after {
+			content: '';
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: 
+				radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0%, transparent 40%),
+				radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 40%),
+				radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 60%);
+			backdrop-filter: blur(50px);
+			z-index: 2;
+			animation: shimmer 15s ease-in-out infinite alternate;
+		}
+		@keyframes shimmer {
+			0% { backdrop-filter: blur(50px) brightness(1); transform: scale(1); }
+			100% { backdrop-filter: blur(60px) brightness(1.1); transform: scale(1.1); }
+		}
+		.background-decoration {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			z-index: 1;
+			overflow: hidden;
+		}
+		.circle {
+			position: absolute;
+			border-radius: 50%;
+			background: rgba(255, 255, 255, 0.05);
+			animation: float 20s infinite linear;
+		}
+		.circle:nth-child(1) {
+			width: 300px;
+			height: 300px;
+			top: -150px;
+			left: -150px;
+			animation-duration: 25s;
+		}
+		.circle:nth-child(2) {
+			width: 200px;
+			height: 200px;
+			top: 70%;
+			right: -100px;
+			animation-duration: 30s;
+			animation-delay: -5s;
+		}
+		.circle:nth-child(3) {
+			width: 150px;
+			height: 150px;
+			bottom: -75px;
+			left: 30%;
+			animation-duration: 20s;
+			animation-delay: -10s;
+		}
+		@keyframes float {
+			0% { transform: translate(0, 0) rotate(0deg); }
+			33% { transform: translate(30px, 30px) rotate(120deg); }
+			66% { transform: translate(-20px, 20px) rotate(240deg); }
+			100% { transform: translate(0, 0) rotate(360deg); }
+		}
+		.login-container {
+			background: rgba(255, 255, 255, 0.95);
+			padding: 2.5rem;
+			border-radius: 15px;
+			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			width: 100%;
+			max-width: 380px;
+			transform: translateY(0);
+			animation: loginAppear 0.5s ease-out;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+		@keyframes loginAppear {
+			from { opacity: 0; transform: translateY(-20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		.form-group {
+			margin-bottom: 1.5rem;
+		}
+		.form-group label {
+			display: block;
+			margin-bottom: 0.5rem;
+			color: #2c3e50;
+			font-weight: 500;
+			font-size: 0.95rem;
+			transition: color 0.3s ease;
+		}
+		.form-group input {
+			width: 100%;
+			padding: 0.75rem;
+			border: 2px solid #e0e0e0;
+			border-radius: 8px;
+			box-sizing: border-box;
+			font-size: 1rem;
+			transition: all 0.3s ease;
+			background-color: white;
+		}
+		.form-group input:focus {
+			outline: none;
+			border-color: #1a2a6c;
+			box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+		}
+		.login-button {
+			width: 100%;
+			padding: 0.75rem;
+			border: none;
+			color: #fff;
+			background-image: linear-gradient(45deg, #1a2a6c, #b21f1f);
+			border-radius: 8px;
+			background-size: 200% auto;
+			font-family: inherit;
+			font-size: 1rem;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		.login-button:hover {
+			background-image: linear-gradient(45deg, #1a2a6c, #fdbb2d);
+			background-position: right center;
+			transform: translateY(-1px);
+			box-shadow: 0 4px 15px rgba(26, 42, 108, 0.2);
+			animation: pulse512 1.5s infinite;
+		}
+		@keyframes pulse512 {
+			0% { box-shadow: 0 0 0 0 rgba(26, 42, 108, 0.4); }
+			70% { box-shadow: 0 0 0 10px rgba(253, 187, 45, 0); }
+			100% { box-shadow: 0 0 0 0 rgba(253, 187, 45, 0); }
+		}
+		.title {
+			text-align: center;
+			margin-bottom: 2rem;
+			color: #1a2a6c;
+			font-size: 1.75rem;
+			font-weight: 600;
+		}
+		.subtitle {
+			text-align: center;
+			color: #666;
+			margin-bottom: 2rem;
+			font-size: 0.95rem;
+		}
+		.error-message {
+			color: #b21f1f;
+			margin-top: 1rem;
+			padding: 0.75rem;
+			border-radius: 8px;
+			background-color: rgba(178, 31, 31, 0.1);
+			display: none;
+			text-align: center;
+			animation: shake 0.5s ease-in-out;
+		}
+		@keyframes shake {
+			0%, 100% { transform: translateX(0); }
+			25% { transform: translateX(-5px); }
+			75% { transform: translateX(5px); }
+		}
+	</style>
+</head>
+<body>
+	<!-- Background decoration -->
+	<div class="background-decoration">
+		<div class="circle"></div>
+		<div class="circle"></div>
+		<div class="circle"></div>
+	</div>
+	<div class="login-container" style="position: relative; z-index: 3;">
+		<h1 class="title">Welcome Back</h1>
+		<p class="subtitle">Please login to access your Patient Management Dashboard</p>
+		<form id="loginForm">
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" id="username" name="username" required 
+					placeholder="Enter your username" autocomplete="username">
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" required 
+					placeholder="Enter your password" autocomplete="current-password">
+			</div>
+			<button type="submit" class="login-button">Sign In</button>
+		</form>
+		<div id="errorMessage" class="error-message"></div>
+	</div>
+	<script src="/static/js/login.js"></script>
+</body>
+</html>
